@@ -1,0 +1,15 @@
+export const PURCHASE_CATEGORIES = [
+  "Milk",
+  "Vegetables",
+  "Grocery",
+  "Rice",
+  "Atta",
+  "Cooking Oil",
+  "Gas Cylinder",
+  "Electricity",
+  "Wi-Fi",
+  "Room Rent",
+  "Water",
+  "Cleaning Items",
+  "Other",
+] as const;
