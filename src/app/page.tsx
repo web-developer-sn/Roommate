@@ -1,10 +1,7 @@
-import Image from "next/image";
-import BalancesPage from "./balances/page";
+'ue client'
+import HomeScreen from "@/components/home-screen/HomeScreen";
+
 
 export default function Home() {
-  return (
-    <div>
-      <BalancesPage/>
-    </div>
-  );
+  return <HomeScreen />;
 }
