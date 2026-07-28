@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export default function Timer() {
-  const [seconds, setSeconds] = useState(165);
+  const [seconds, setSeconds] = useState(300);
 
   useEffect(() => {
     if (seconds <= 0) return;

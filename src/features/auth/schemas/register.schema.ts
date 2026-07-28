@@ -1,33 +1,20 @@
 import { z } from "zod";
 
-export const registerSchema = z
-  .object({
-    fullName: z
-      .string()
-      .min(3, "Full name must be at least 3 characters"),
+export const registerSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50),
 
-    email: z
-      .string()
-      .email("Enter a valid email"),
+  email: z
+    .email("Invalid email")
+    .toLowerCase(),
 
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters"),
+});
 
-    confirmPassword: z.string(),
-
-    terms: z.boolean().refine((value) => value, {
-      message: "Please accept Terms & Conditions",
-    }),
-  })
-  .refine(
-    (data) => data.password === data.confirmPassword,
-    {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
-    }
-  );
-
-export type RegisterFormData = z.infer<
+export type RegisterInput = z.infer<
   typeof registerSchema
 >;

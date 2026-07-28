@@ -15,14 +15,7 @@ export default function TermsCheckbox() {
           type="checkbox"
           checked={checked}
           onChange={() => setChecked(!checked)}
-          className="
-            mt-1
-            h-5
-            w-5
-            rounded
-            accent-violet-600
-            border-gray-300
-          "
+          className=" mt-1 h-5  w-5  rounded  accent-violet-600 border-gray-300 "
         />
 
         <span className="text-sm text-gray-600 leading-6">

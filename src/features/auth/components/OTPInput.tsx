@@ -1,11 +1,43 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import {
+  Control,
+  useController,
+} from "react-hook-form";
 
-export default function OTPInput() {
-  const [otp, setOtp] = useState(Array(6).fill(""));
+interface FormValues {
+  otp: string;
+}
 
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+interface OTPInputProps {
+  control: Control<FormValues>;
+}
+
+export default function OTPInput({
+  control,
+}: OTPInputProps) {
+
+  const {
+    field,
+  } = useController({
+    name: "otp",
+    control,
+    rules: {
+      required: "OTP is required",
+      minLength: {
+        value: 6,
+        message: "OTP must be 6 digits",
+      },
+    },
+  });
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const digits = Array.from(
+    { length: 6 },
+    (_, index) => field.value?.[index] ?? ""
+  );
 
   const handleChange = (
     value: string,
@@ -13,14 +45,14 @@ export default function OTPInput() {
   ) => {
     if (!/^\d?$/.test(value)) return;
 
-    const newOtp = [...otp];
+    const values = [...digits];
 
-    newOtp[index] = value;
+    values[index] = value;
 
-    setOtp(newOtp);
+    field.onChange(values.join(""));
 
     if (value && index < 5) {
-      inputs.current[index + 1]?.focus();
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -30,10 +62,10 @@ export default function OTPInput() {
   ) => {
     if (
       e.key === "Backspace" &&
-      otp[index] === "" &&
+      !digits[index] &&
       index > 0
     ) {
-      inputs.current[index - 1]?.focus();
+      inputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -42,36 +74,31 @@ export default function OTPInput() {
   ) => {
     e.preventDefault();
 
-    const paste = e.clipboardData
+    const pasted = e.clipboardData
       .getData("text")
-      .trim();
+      .replace(/\D/g, "")
+      .slice(0, 6);
 
-    if (!/^\d{6}$/.test(paste)) return;
+    field.onChange(pasted);
 
-    const values = paste.split("");
-
-    setOtp(values);
-
-    values.forEach((value, index) => {
-      if (inputs.current[index]) {
-        inputs.current[index]!.value = value;
-      }
-    });
-
-    inputs.current[5]?.focus();
+    inputRefs.current[
+      Math.min(pasted.length - 1, 5)
+    ]?.focus();
   };
 
   return (
     <div className="flex justify-center gap-3">
 
-      {otp.map((digit, index) => (
+      {digits.map((digit, index) => (
         <input
           key={index}
-          ref={(element) => {
-            inputs.current[index] = element;
+          ref={(el) => {
+            inputRefs.current[index] = el;
           }}
+          type="text"
           maxLength={1}
           value={digit}
+          inputMode="numeric"
           onChange={(e) =>
             handleChange(
               e.target.value,
@@ -85,22 +112,7 @@ export default function OTPInput() {
             )
           }
           onPaste={handlePaste}
-          inputMode="numeric"
-          className="
-          h-16
-          w-14
-          rounded-2xl
-          border
-          border-gray-200
-          text-center
-          text-2xl
-          font-bold
-          outline-none
-          transition
-          focus:border-violet-600
-          focus:ring-4
-          focus:ring-violet-100
-        "
+          className="h-16 w-14 rounded-2xl border border-gray-200 text-center text-2xl font-bold outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-100"
         />
       ))}
 

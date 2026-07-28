@@ -7,17 +7,22 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 interface AuthInputProps {
   label: string;
   placeholder: string;
   type: "email" | "password" | "text";
+  register?:UseFormRegisterReturn;
+  error?:string;
 }
 
 export default function AuthInput({
   label,
   placeholder,
   type,
+  register,
+  error
 }: AuthInputProps) {
   const [showPassword, setShowPassword] =
     useState(false);
@@ -57,6 +62,7 @@ export default function AuthInput({
         </div>
 
         <input
+        {...register}
           type={inputType}
           placeholder={placeholder}
           className="w-full rounded-2xl border border-gray-200 bg-white py-4 pl-12 pr-12 text-gray-800 outline-none transition duration-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-100"

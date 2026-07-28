@@ -8,11 +8,38 @@ import AuthInput from "./AuthInput";
 import GoogleButton from "./GoogleButton";
 import TermsCheckbox from "./TermsCheckbox";
 import RegisterHero from "./RegisterHero";
+import {useForm} from 'react-hook-form';
+import { useRegister } from "../hooks/useRegister";
 
-export default function RegisterForm() {
+interface RegisterFormData{
+  fullName:string,
+  email:string,
+  password:string,
+  confirmPassword:string,
+}
+
+
+export default function RegisterForm( ) {
   const router = useRouter();
+  const { register,handleSubmit,formState:{errors}}=useForm<RegisterFormData>();
+    const registerMutation = useRegister();
+  const onSubmit = (data: RegisterFormData) => {
+    const  payload={name:data.fullName,email:data.email,password:data.password}
+    registerMutation.mutate(payload, {
+    onSuccess: () => {
+  router.push(
+    `/verify-email?email=${encodeURIComponent(data.email)}`
+  );
+},
 
+      onError: (error: any) => {
+        console.log(error.response.data);
+      },
+    });
+
+  };
   return (
+    <form onSubmit={handleSubmit(onSubmit)}>
     <main className="min-h-screen bg-[#F7F4FF] flex items-center justify-center py-10">
 
       <div className="w-full max-w-md overflow-hidden rounded-[35px] bg-white shadow-2xl">
@@ -48,24 +75,40 @@ export default function RegisterForm() {
               label="Full Name"
               placeholder="Enter your full name"
               type="text"
+                  register={register("fullName", {
+                  required: "Full Name Required",
+                })}
+                error={errors.fullName?.message}
             />
 
             <AuthInput
               label="Email Address"
               placeholder="Enter your email"
               type="email"
+                  register={register("email", {
+                  required: "Email Required",
+                })}
+                error={errors.email?.message}
             />
 
             <AuthInput
               label="Password"
               placeholder="Create a password"
               type="password"
+                  register={register("password", {
+                  required: "Password Required",
+                })}
+                error={errors.password?.message}
             />
 
             <AuthInput
               label="Confirm Password"
               placeholder="Confirm your password"
               type="password"
+                  register={register("confirmPassword", {
+                  required: "Confirm Password Required",
+                })}
+                error={errors.confirmPassword?.message}
             />
 
           </div>
@@ -73,18 +116,7 @@ export default function RegisterForm() {
           <TermsCheckbox />
 
           <button
-            className="
-            mt-6
-            w-full
-            rounded-xl
-            bg-gradient-to-r
-            from-violet-700
-            to-violet-500
-            py-4
-            text-lg
-            font-semibold
-            text-white
-          "
+            className=" mt-6 w-full rounded-xl bg-gradient-to-r  from-violet-700 to-violet-500 py-4 text-lg font-semibold  text-white "
           >
             Create Account
           </button>
@@ -125,5 +157,6 @@ export default function RegisterForm() {
       </div>
 
     </main>
+    </form>
   );
 }
