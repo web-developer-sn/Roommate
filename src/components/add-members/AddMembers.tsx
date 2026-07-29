@@ -2,112 +2,110 @@
 
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import GroupHeader from "./GroupHeader";
 import AddMemberInput from "./AddMemberInput";
 import MemberCard from "./MemberCard";
-import {useRouter} from "next/navigation";
+import { useMembers } from "@/features/members/hooks/useMembers";
+
+
+
 export default function AddMembers() {
-  
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "Rahul",
-      host: true,
-    },
-    {
-      id: 2,
-      name: "Aman",
-      host: false,
-    },
-    {
-      id: 3,
-      name: "Rohit",
-      host: false,
-    },
-    {
-      id: 4,
-      name: "Sumit",
-      host: false,
-    },
-  ]);
+  const router = useRouter();
 
-  function addMember(name: string) {
-    if (!name.trim()) return;
+  const searchParams = useSearchParams();
 
-    setMembers((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name,
-        host: false,
-      },
-    ]);
-  }
-const router=useRouter();
-const handleContinue=()=>{
-  router.push("/dashboard");
-}
+  const groupId = searchParams.get("groupId") ?? "";
+
+  const { data, isLoading } = useMembers(groupId);
+
+  const members = data?.members ?? [];
+
+  const [selectedMember, setSelectedMember] =
+    useState("");
+
+  const handleContinue = () => {
+    if (!selectedMember) {
+      alert("Please select yourself");
+      return;
+    }
+
+    localStorage.setItem(
+      "groupId",
+      groupId
+    );
+
+    localStorage.setItem(
+      "memberId",
+      selectedMember
+    );
+
+    router.push("/dashboard");
+  };
+
   return (
     <main className="min-h-screen bg-[#F7F4FF] flex justify-center py-8">
-
       <div className="w-full max-w-md rounded-[35px] bg-white shadow-xl">
-
         <div className="flex items-center px-6 py-5">
-
-          <ArrowLeft />
+          <ArrowLeft
+            className="cursor-pointer"
+            onClick={() => router.back()}
+          />
 
           <h1 className="flex-1 text-center text-xl font-bold">
             Add Members
           </h1>
 
-          <div className="w-6"></div>
-
+          <div className="w-6" />
         </div>
 
         <div className="px-5">
-
           <GroupHeader />
 
           <div className="mt-8">
-
             <AddMemberInput
-              onAdd={addMember}
+              groupId={groupId}
             />
-
           </div>
 
           <h2 className="mt-8 mb-4 font-semibold">
-
             Members ({members.length})
-
           </h2>
 
-          <div className="space-y-3">
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="space-y-3">
+              {members.map((member: any) => (
+                <MemberCard
+                  key={member._id}
+                  member={member}
+                  selected={
+                    selectedMember ===
+                    member._id
+                  }
+                  onClick={() =>
+                    setSelectedMember(
+                      member._id
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
 
-            {members.map((member) => (
-              <MemberCard
-                key={member.id}
-                member={member}
-              />
-            ))}
+          <button
+            type="button"
+            onClick={handleContinue}
+            className="mt-8 mb-8 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 py-4 font-semibold text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            Continue to Dashboard
 
-          </div>
-
-         <button
-  type="button"
-  onClick={handleContinue}
-  className="mt-8 mb-8 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 py-4 font-semibold text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
->
-  Continue to Dashboard
-
-  <ArrowRight size={18} />
-</button>
-
+            <ArrowRight size={18} />
+          </button>
         </div>
-
       </div>
-
     </main>
   );
 }

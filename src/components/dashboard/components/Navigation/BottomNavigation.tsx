@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
+import {useRouter} from "next/navigation";
 import {
   Home,
   ReceiptText,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 export default function BottomNavigation() {
+  const router=useRouter();
   return (
     <nav className="sticky bottom-0 mt-8 border-t bg-white px-4 py-3">
 
@@ -44,7 +45,7 @@ export default function BottomNavigation() {
 
         {/* Floating Add Button */}
 
-        <button
+        <button onClick={()=>router.push("/add-expense")}
   className="-mt-10 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-violet-700 to-violet-500 text-white shadow-xl"
 >
   <Plus size={32} />

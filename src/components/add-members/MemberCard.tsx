@@ -1,32 +1,21 @@
-import {
-  MoreVertical,
-} from "lucide-react";
+import { MoreVertical, CheckCircle2 } from "lucide-react";
 
 interface Member {
-
-  id: number;
-
+  _id: string;
   name: string;
-
-  host: boolean;
-
 }
 
 interface Props {
-
   member: Member;
-
+  selected: boolean;
+  onClick: () => void;
 }
 
 function getAvatar(name: string) {
-
   return name.charAt(0).toUpperCase();
-
 }
 
-function getColor(name: string, host: boolean) {
-  if (host) return "bg-violet-500";
-
+function getColor(name: string) {
   switch (name.toLowerCase()) {
     case "aman":
       return "bg-green-500";
@@ -38,61 +27,58 @@ function getColor(name: string, host: boolean) {
       return "bg-orange-500";
 
     default:
-      return "bg-pink-500";
+      return "bg-violet-500";
   }
 }
 
 export default function MemberCard({
   member,
+  selected,
+  onClick,
 }: Props) {
-
   return (
-    <div className="flex items-center justify-between rounded-2xl border bg-white p-4 shadow-sm">
-
+    <div
+      onClick={onClick}
+      className={`cursor-pointer flex items-center justify-between rounded-2xl border p-4 shadow-sm transition-all
+        ${
+          selected
+            ? "border-violet-600 bg-violet-50"
+            : "border-gray-200 bg-white hover:border-violet-300"
+        }`}
+    >
       <div className="flex items-center gap-4">
-
         <div
           className={`h-12 w-12 rounded-full ${getColor(
-            member.name,
-            member.host
-          )} flex items-center justify-center text-white font-bold`}
+            member.name
+          )} flex items-center justify-center font-bold text-white`}
         >
           {getAvatar(member.name)}
         </div>
 
         <div>
-
           <h3 className="font-semibold">
-
             {member.name}
-
-            {member.host && " (You)"}
-
           </h3>
 
+          <p className="text-sm text-gray-500">
+            Member
+          </p>
         </div>
-
       </div>
 
       <div className="flex items-center gap-3">
-
-        {member.host ? (
-          <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
-            Host
-          </span>
+        {selected ? (
+          <CheckCircle2
+            size={24}
+            className="text-violet-600"
+          />
         ) : (
-          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-            Member
-          </span>
+          <MoreVertical
+            size={20}
+            className="text-gray-400"
+          />
         )}
-
-        <MoreVertical
-          size={20}
-          className="cursor-pointer text-gray-500"
-        />
-
       </div>
-
     </div>
   );
 }
