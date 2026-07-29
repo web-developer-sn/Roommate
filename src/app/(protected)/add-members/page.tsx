@@ -1,6 +1,16 @@
-'use client'
+"use client";
+
+import { Suspense } from "react";
 import AddMembers from "@/components/add-members/AddMembers";
 
-export default function Page() {
+function AddMembersContent() {
   return <AddMembers />;
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AddMembersContent />
+    </Suspense>
+  );
 }
