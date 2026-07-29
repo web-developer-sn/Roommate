@@ -5,29 +5,22 @@ import { getCurrentUser } from "@/lib/auth";
 
 import Group from "@/models/Group";
 
-import { createGroupSchema } from "@/features/groups/schemas/create-group.schema";
-import { generateInviteCode } from "@/lib/generateInviteCode";
-
 export async function POST(
   request: NextRequest
 ) {
   try {
     await connectDB();
 
-    const user = await getCurrentUser();
+    await getCurrentUser();
 
-    const body = await request.json();
+    const { inviteCode } =
+      await request.json();
 
-    const validated =
-      createGroupSchema.safeParse(body);
-
-    if (!validated.success) {
+    if (!inviteCode) {
       return NextResponse.json(
         {
           success: false,
-          errors:
-            validated.error.flatten()
-              .fieldErrors,
+          message: "Invite code is required",
         },
         {
           status: 400,
@@ -35,23 +28,31 @@ export async function POST(
       );
     }
 
-const group = await Group.create({
-  name: validated.data.name,
-  description: validated.data.description,
-  inviteCode: generateInviteCode(),
-  createdBy: user.userId,
-});
+    const group = await Group.findOne({
+      inviteCode: inviteCode
+        .toUpperCase()
+        .trim(),
+    }).select("_id");
+
+    if (!group) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid invite code",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
-        message:
-          "Group created successfully",
-
-        group,
+        groupId: group._id,
       },
       {
-        status: 201,
+        status: 200,
       }
     );
   } catch (error) {

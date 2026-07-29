@@ -6,7 +6,10 @@ import mongoose, {
 
 export interface IGroup extends Document {
   name: string;
+
   description?: string;
+
+  inviteCode: string;
 
   createdBy: Types.ObjectId;
 
@@ -27,6 +30,14 @@ const groupSchema = new Schema<IGroup>(
       default: "",
     },
 
+    inviteCode: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
+    },
+
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -38,9 +49,11 @@ const groupSchema = new Schema<IGroup>(
   }
 );
 
-export default
+const Group =
   mongoose.models.Group ||
   mongoose.model<IGroup>(
     "Group",
     groupSchema
   );
+
+export default Group;

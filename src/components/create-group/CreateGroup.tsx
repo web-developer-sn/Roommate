@@ -8,7 +8,6 @@ import FormInput from "./FormInput";
 import InfoCard from "./InfoCard";
 import { useCreateGroup } from "@/features/groups/hooks/useCreateGroup";
 
-
 interface CreateGroupForm {
   name: string;
   description: string;
@@ -26,14 +25,14 @@ export default function CreateGroup() {
   } = useForm<CreateGroupForm>();
 
   const onSubmit = (data: CreateGroupForm) => {
-   
     createGroupMutation.mutate(data, {
       onSuccess: (response) => {
-        const groupId = response.group._id;
+        const group = response.group;
 
-       router.push(`/add-members?groupId=${groupId}`);
+        localStorage.setItem("inviteCode", group.inviteCode);
+
+        router.push(`/add-members?groupId=${group._id}`);
       },
-
       onError: (error: any) => {
         console.log(error.response?.data);
       },
@@ -64,10 +63,7 @@ export default function CreateGroup() {
           <div className="mx-5 rounded-3xl border border-gray-100 bg-white p-7 shadow-sm">
             <div className="flex justify-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-violet-500">
-                <Users
-                  size={38}
-                  className="text-white"
-                />
+                <Users size={38} className="text-white" />
               </div>
             </div>
 
@@ -102,9 +98,7 @@ export default function CreateGroup() {
               disabled={createGroupMutation.isPending}
               className="mt-8 w-full rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 py-4 font-semibold text-white"
             >
-              {createGroupMutation.isPending
-                ? "Creating..."
-                : "Create Group"}
+              {createGroupMutation.isPending ? "Creating..." : "Create Group"}
             </button>
           </div>
 

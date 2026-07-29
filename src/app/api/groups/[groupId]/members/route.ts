@@ -8,10 +8,6 @@ import Group from "@/models/Group";
 
 import { createMemberSchema } from "@/features/members/schemas/create-member.schema";
 
-/* =========================================
-   GET ALL MEMBERS
-   GET /api/groups/:groupId/members
-========================================= */
 
 export async function GET(
   request: NextRequest,
@@ -34,7 +30,7 @@ export async function GET(
       _id: groupId,
       createdBy: user.userId,
     });
-
+  
     if (!group) {
       return NextResponse.json(
         {
@@ -53,7 +49,7 @@ export async function GET(
     }).sort({
       createdAt: 1,
     });
-
+    
     return NextResponse.json(
       {
         success: true,
