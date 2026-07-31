@@ -4,9 +4,10 @@ import mongoose, {
 } from "mongoose";
 
 export interface IExpense {
+  category:string,
   groupId: Types.ObjectId;
 
-  title: string;
+  title?: string;
 
   amount: number;
 

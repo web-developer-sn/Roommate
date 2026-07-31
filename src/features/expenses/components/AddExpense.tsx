@@ -17,6 +17,7 @@ import {
 
 import { useAddExpense } from "../hooks/useAddExpense";
 import { useMembers } from "@/features/members/hooks/useMembers";
+import item from "./item";
 
 type ExpenseFormData = z.infer<
   typeof createExpenseSchema
@@ -49,6 +50,7 @@ export default function AddExpense() {
   const {
     register,
     control,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<ExpenseFormData>({
@@ -57,6 +59,7 @@ export default function AddExpense() {
     ),
 
     defaultValues: {
+      category:"",
       title: "",
 
       amount: 0,
@@ -68,13 +71,19 @@ export default function AddExpense() {
   });
 
   const onSubmit = (
-    data: ExpenseFormData
+    item: ExpenseFormData
   ) => {
     addExpenseMutation.mutate(
       {
         groupId,
 
-        data,
+        data:{
+          category:item?.category,
+          title:(item?.category==="other")?item.title:item?.category,
+          amount:item?.amount,
+          paidBy:item?.paidBy,
+          splitBetween:item?.splitBetween
+        },
       },
       {
         onSuccess() {
@@ -91,7 +100,8 @@ export default function AddExpense() {
       }
     );
   };
-
+  const category=watch("category")
+const dropDownData=item()
   return (
     <main className="flex min-h-screen justify-center bg-[#F7F4FF] py-8">
 
@@ -127,11 +137,27 @@ export default function AddExpense() {
               Expense Name
             </label>
 
-            <input
+<select {...register("category")}
+ className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-violet-500"
+>
+  {
+    dropDownData.map((item)=>(
+      <option 
+      key={item.value} 
+      value={item.value}
+      >
+{item.label}
+      </option>
+    ))
+  }
+</select>
+            { 
+            category==="other" && (
+              <input
               {...register("title")}
               placeholder="Milk"
-              className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-violet-500"
-            />
+              className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-violet-500 mt-2"
+            />) }
 
             {errors.title && (
               <p className="mt-1 text-sm text-red-500">

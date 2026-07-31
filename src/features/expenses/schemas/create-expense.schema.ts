@@ -1,10 +1,13 @@
 import { z } from "zod";
 
 export const createExpenseSchema = z.object({
+  category:z
+  .string()
+ .min(1, "Please select  Category"),
   title: z
     .string()
-    .trim()
-    .min(2, "Expense name is required"),
+    .trim(),
+    // .min(2, "Expense name is required"),
 
   amount: z
     .number()
