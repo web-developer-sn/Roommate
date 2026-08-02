@@ -1,168 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import { showToast } from "@/components/ui/toast";
 
-interface Member {
-  _id: string;
-  name: string;
-}
+
 
 export default function TestPage() {
-  const [groupId, setGroupId] = useState("");
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
-  const [paidBy, setPaidBy] = useState("");
-  const [members, setMembers] = useState<Member[]>([]);
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
-  const [response, setResponse] = useState<any>(null);
-
-  useEffect(() => {
-    const gid = localStorage.getItem("groupId") ?? "";
-
-    setGroupId(gid);
-
-    if (!gid) return;
-
-    fetchMembers(gid);
-  }, []);
-
-  async function fetchMembers(groupId: string) {
-    try {
-      const res = await api.get(
-        `/groups/${groupId}/members`
-      );
-
-      setMembers(res.data.members);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  function toggleMember(memberId: string) {
-    setSelectedMembers((prev) =>
-      prev.includes(memberId)
-        ? prev.filter((id) => id !== memberId)
-        : [...prev, memberId]
-    );
-  }
-
-  async function handleSubmit() {
-    try {
-      const res = await api.post(
-        `/groups/${groupId}/expenses`,
-        {
-          title,
-          amount: Number(amount),
-          paidBy,
-          splitBetween: selectedMembers,
-        }
-      );
-
-      setResponse(res.data);
-
-      alert("Expense Added");
-    } catch (error: any) {
-      console.log(error.response?.data);
-
-      setResponse(error.response?.data);
-    }
-  }
-
   return (
-    <div className="mx-auto mt-10 max-w-xl space-y-6 rounded-lg border p-6">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl space-y-4">
+        <h1 className="text-2xl font-bold text-center">
+          🎉 Toast Test Page
+        </h1>
 
-      <h1 className="text-2xl font-bold">
-        Expense API Test
-      </h1>
-
-      <input
-        className="w-full rounded border p-2"
-        placeholder="Expense Title"
-        value={title}
-        onChange={(e) =>
-          setTitle(e.target.value)
-        }
-      />
-
-      <input
-        className="w-full rounded border p-2"
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) =>
-          setAmount(e.target.value)
-        }
-      />
-
-      <div>
-        <label className="mb-2 block font-semibold">
-          Paid By
-        </label>
-
-        <select
-          value={paidBy}
-          onChange={(e) =>
-            setPaidBy(e.target.value)
+        <button
+          onClick={() =>
+            showToast.success(
+              "Success!",
+              "Expense added successfully."
+            )
           }
-          className="w-full rounded border p-2"
+          className="w-full rounded-xl bg-emerald-600 py-3 font-medium text-white hover:bg-emerald-700 transition"
         >
-          <option value="">
-            Select Member
-          </option>
+          Success Toast
+        </button>
 
-          {members.map((member) => (
-            <option
-              key={member._id}
-              value={member._id}
-            >
-              {member.name}
-            </option>
-          ))}
-        </select>
+        <button
+          onClick={() =>
+            showToast.error(
+              "Error!",
+              "Something went wrong."
+            )
+          }
+          className="w-full rounded-xl bg-red-600 py-3 font-medium text-white hover:bg-red-700 transition"
+        >
+          Error Toast
+        </button>
+
+        <button
+          onClick={() =>
+            showToast.warning(
+              "Warning!",
+              "Please fill all required fields."
+            )
+          }
+          className="w-full rounded-xl bg-yellow-500 py-3 font-medium text-white hover:bg-yellow-600 transition"
+        >
+          Warning Toast
+        </button>
+
+        <button
+          onClick={() =>
+            showToast.info(
+              "Information",
+              "New update is available."
+            )
+          }
+          className="w-full rounded-xl bg-sky-600 py-3 font-medium text-white hover:bg-sky-700 transition"
+        >
+          Info Toast
+        </button>
+
+        <button
+          onClick={() => {
+            showToast.success("Success", "This is success.");
+            setTimeout(() => {
+              showToast.error("Error", "This is error.");
+            }, 800);
+            setTimeout(() => {
+              showToast.warning("Warning", "This is warning.");
+            }, 1600);
+            setTimeout(() => {
+              showToast.info("Info", "This is information.");
+            }, 2400);
+          }}
+          className="w-full rounded-xl bg-violet-600 py-3 font-medium text-white hover:bg-violet-700 transition"
+        >
+          Test All Toasts
+        </button>
       </div>
-
-      <div>
-        <label className="mb-2 block font-semibold">
-          Split Between
-        </label>
-
-        {members.map((member) => (
-          <label
-            key={member._id}
-            className="flex gap-2"
-          >
-            <input
-              type="checkbox"
-              checked={selectedMembers.includes(
-                member._id
-              )}
-              onChange={() =>
-                toggleMember(member._id)
-              }
-            />
-
-            {member.name}
-          </label>
-        ))}
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="rounded bg-violet-600 px-6 py-3 text-white"
-      >
-        Create Expense
-      </button>
-
-      {response && (
-        <pre className="overflow-auto rounded bg-gray-100 p-4 text-sm">
-          {JSON.stringify(
-            response,
-            null,
-            2
-          )}
-        </pre>
-      )}
     </div>
   );
 }

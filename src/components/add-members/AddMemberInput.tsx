@@ -2,6 +2,7 @@
 
 import { useAddMember } from "@/features/members/hooks/useAddMember";
 import { useState } from "react";
+import { showToast } from "../ui/toast";
 
 
 interface Props {
@@ -18,8 +19,11 @@ export default function AddMemberInput({
   const handleAdd = () => {
     const trimmedName = name.trim();
 
-    if (!trimmedName) return;
-
+    if (!trimmedName)
+       {
+        showToast.error("Member name is required", "Please enter a valid member name.");
+        return;
+       }
     addMemberMutation.mutate(
       {
         groupId,

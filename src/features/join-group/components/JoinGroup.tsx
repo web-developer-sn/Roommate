@@ -11,6 +11,7 @@ import {
 } from "../schemas/join-group.schema";
 
 import { useJoinGroup } from "../hooks/useJoinGroup";
+import { showToast } from "@/components/ui/toast";
 
 export default function JoinGroup() {
   const router = useRouter();
@@ -36,7 +37,8 @@ export default function JoinGroup() {
       },
 
       onError(error: any) {
-        alert(
+        showToast.error(
+          "Error",
           error.response?.data?.message ??
             "Invalid Invite Code"
         );

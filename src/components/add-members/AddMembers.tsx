@@ -8,6 +8,8 @@ import GroupHeader from "./GroupHeader";
 import AddMemberInput from "./AddMemberInput";
 import MemberCard from "./MemberCard";
 import { useMembers } from "@/features/members/hooks/useMembers";
+import { showToast } from "../ui/toast";
+
 
 
 
@@ -26,10 +28,16 @@ export default function AddMembers() {
     useState("");
 
   const handleContinue = () => {
-    if (!selectedMember) {
-      alert("Please select yourself");
-      return;
-    }
+    console.log("Button Clicked");
+
+  if (!selectedMember) {
+    showToast.error(
+      "Member Required",
+      "You must select yourself as a member."
+    );
+
+    return;
+  }
 
     localStorage.setItem(
       "groupId",
@@ -48,7 +56,7 @@ export default function AddMembers() {
     <main className="min-h-screen bg-[#F7F4FF] flex justify-center py-8">
       <div className="w-full max-w-md rounded-[35px] bg-white shadow-xl">
         <div className="flex items-center px-6 py-5">
-          <ArrowLeft
+          <ArrowLeft 
             className="cursor-pointer"
             onClick={() => router.back()}
           />
